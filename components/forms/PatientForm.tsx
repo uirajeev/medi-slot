@@ -8,11 +8,12 @@ import { Form } from '@/components/ui/form';
 import CustomFormField, { FormFieldType } from '@/components/CustomFormField';
 import SubmitButton from '@/components/SubmitButton';
 import { UserFromValidartion } from '@/lib/validation';
-import { create } from 'domain';
+import { createUser } from '@/lib/actions/patient.actions';
 
 const PatientForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
   const form = useForm<z.infer<typeof UserFromValidartion>>({
     resolver: zodResolver(UserFromValidartion),
     defaultValues: {
@@ -22,22 +23,18 @@ const PatientForm = () => {
     },
   });
 
-  async function onSubmit({
-    name,
-    email,
-    phone,
-  }: z.infer<typeof UserFromValidartion>) {
+  const onSubmit = async ({name, email, phone}: z.infer<typeof UserFromValidartion>) => {
     setIsLoading(true);
-
     try {
-      // const userData = { name, email, phone };
-      // const user = await createUser(userData);
-      // if (user) {
-      //   router.push(`/patients/${user.$id}/register`);
-      // }
+      const userData = { name, email, phone };
+      const user = await createUser(userData);
+      if (user) {
+        router.push(`/patients/${user.$id}/register`);
+      }
     } catch (error) {
       console.error('Error creating user:', error);
     }
+    setIsLoading(false);
   }
   return (
     <Form {...form}>
